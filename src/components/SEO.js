@@ -1,5 +1,6 @@
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
+import { Helmet } from "@dr.pogodin/react-helmet";
+
 
 const SEO = ({ title, description, name, type }) => {
     return (
