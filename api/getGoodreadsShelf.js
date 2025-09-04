@@ -6,10 +6,8 @@ module.exports = async (req, res) => {
     const userId = process.env.GOODREADS_USER_ID;
 
     if (!shelf || !userId) {
-        console.error('Missing shelf or userId:', { shelf, userId });
         return res.status(400).json({ error: 'Shelf and User ID are required.' });
     }
-    console.log("Shelf:", shelf, "UserID from env:", process.env.GOODREADS_USER_ID);
 
 
     const RSS_URL = `https://www.goodreads.com/review/list_rss/${userId}?shelf=${shelf}`;
