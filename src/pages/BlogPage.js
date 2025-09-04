@@ -105,7 +105,7 @@ const BlogPage = () => {
     return (
         <>
             <SEO
-    title="Blog - Saurav Singh Khekhaliya"
+    title="Blog - S. S. Khekhaliya"
     description="Read thought-provoking articles on social issues, science, health, and personal reflections by Saurav Singh Khekhaliya."
     name="Saurav Singh Khekhaliya"
     type="website"

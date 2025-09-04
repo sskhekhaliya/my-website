@@ -41,9 +41,9 @@ const SinglePostPage = () => {
     return (
         <>
             <SEO
-                title={`${post.title} - Your Name`}
+                title={`${post.title} - S. S. Khekhaliya`}
                 description={post.content.substring(0, 160)}
-                name="Your Name"
+                name="Saurav SIngh Khekhaliya"
                 type="article"
             />
             <div className="animate-fade-in-up">

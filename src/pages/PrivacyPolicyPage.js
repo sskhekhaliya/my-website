@@ -6,7 +6,7 @@ const PrivacyPolicyPage = () => (
     <SEO
       title="Privacy Policy - SSKhekhaliya"
       description="Privacy policy for SSKhekhaliya’s website—how your data is collected, used, stored, and protected."
-      name="SSKhekhaliya"
+      name="Saurav SIngh Khekhaliya"
       type="website"
     />
 

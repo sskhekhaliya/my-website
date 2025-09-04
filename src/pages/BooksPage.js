@@ -6,7 +6,7 @@ import BookTabs, { WritingSection, BookList } from '../components/BookTabs';
 const BooksPage = () => (
     <>
         <SEO
-    title="Bookshelf - Saurav Singh Khekhaliya"
+    title="Bookshelf - S. S. Khekhaliya"
     description="A personal collection by Saurav Singh Khekhaliya featuring books I'm writing, currently reading, have finished, and plan to read."
     name="Saurav Singh Khekhaliya"
     type="website"

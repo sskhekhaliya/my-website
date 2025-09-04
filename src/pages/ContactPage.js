@@ -5,9 +5,9 @@ import { Instagram, Youtube, Github, Linkedin } from 'lucide-react';
 const ContactPage = () => (
     <>
         <SEO
-            title="Contact Me - Your Name"
+            title="Contact Me - S. S. Khekhaliya"
             description="Get in touch with me through my social media channels."
-            name="Your Name"
+            name="Saurav SIngh Khekhaliya"
             type="website"
         />
         <div className="space-y-10">

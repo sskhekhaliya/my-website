@@ -4,9 +4,9 @@ import SEO from '../components/SEO';
 const ProjectsPage = () => (
     <>
         <SEO
-            title="Projects - Your Name"
+            title="Projects - S. S. Khekhaliya"
             description="A showcase of my work, including fitness vlogs, novels, and entrepreneurial ventures."
-            name="Your Name"
+            name="Saurav SIngh Khekhaliya"
             type="website"
         />
         <div className="space-y-10">
