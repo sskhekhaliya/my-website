@@ -4,7 +4,7 @@ import SEO from '../components/SEO';
 const PersonalPage = () => (
   <>
     <SEO
-      title="Personal Page - S. S. Khekhaliya"
+      title="Home - SSKhekhaliya"
       description="Welcome to my personal space. Explore my fitness journey, projects, books, and creative work."
       name="Saurav Singh Khekhaliya"
       type="website"

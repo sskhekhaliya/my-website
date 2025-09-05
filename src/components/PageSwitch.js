@@ -14,7 +14,7 @@ const PageSwitch = () => {
         <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-2 md:space-x-8 md:gap-0">
             <NavLink to="/" className={navLinkClasses} end>
                 <User size={18} />
-                <span>Personal</span>
+                <span>Home</span>
             </NavLink>
             <NavLink to="/blog" className={navLinkClasses}>
                 <BookText size={18} />
