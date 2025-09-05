@@ -20,7 +20,7 @@ const LoadingIndicator = () => (
             `}
         </style>
         {/* Mobile Loader: Positioned to sit just on top of the bottom nav bar's border. */}
-        <div className="md:hidden fixed bottom-[49px] left-0 w-full h-0.5 bg-gray-200 dark:bg-gray-700 overflow-hidden">
+        <div className="md:hidden fixed bottom-[55px] left-0 w-full h-0.5 bg-gray-200 dark:bg-gray-700 overflow-hidden z-50">
             <div className="w-full h-full bg-blue-500 animate-loading-progress"></div>
         </div>
         
@@ -79,6 +79,7 @@ const BlogPage = () => {
         setSelectedTags(prev => 
             prev.includes(tag) ? prev.filter(t => t !== tag) : [tag]
         );
+        mainContentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     const createSnippet = (htmlContent) => {

@@ -1,9 +1,9 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { AppContext } from '../layouts/SiteLayout';
 import { ArrowLeft, Clock } from 'lucide-react';
 import SEO from '../components/SEO';
-import { SinglePostSkeleton } from '../components/SkeletonCard'; // Corrected import
+import { SinglePostSkeleton } from '../components/SkeletonCard';
 
 const SinglePostPage = () => {
     const { posts, loading, error, setSelectedTags } = useContext(AppContext);
@@ -11,12 +11,43 @@ const SinglePostPage = () => {
     const navigate = useNavigate();
     const post = posts.find(p => p.id === postId);
 
+    // This effect controls the visibility of the progress bar
+    useEffect(() => {
+        const styleId = 'scroll-progress-style';
+        let styleTag = document.getElementById(styleId);
+
+        if (!styleTag) {
+            styleTag = document.createElement('style');
+            styleTag.id = styleId;
+            document.head.appendChild(styleTag);
+        }
+
+        // When on this page, make the progress circle visible
+        styleTag.innerHTML = `
+            .stroke-blue-500 {
+                opacity: 1 !important;
+                transition: opacity 0.3s ease-in-out;
+            }
+        `;
+
+        // When we leave this page, hide it again
+        return () => {
+            styleTag.innerHTML = `
+                .stroke-blue-500 {
+                    opacity: 0 !important;
+                    transition: opacity 0.3s ease-in-out;
+                }
+            `;
+        };
+    }, []);
+
     const handleTagClick = (tag) => {
         setSelectedTags([tag]);
         navigate('/blog');
     };
     
     const calculateReadingTime = (htmlContent) => {
+        if (!htmlContent) return '0 min read';
         const div = document.createElement('div');
         div.innerHTML = htmlContent;
         const text = div.textContent || div.innerText || "";
@@ -41,8 +72,8 @@ const SinglePostPage = () => {
     return (
         <>
             <SEO
-                title={`${post.title} - S. S. Khekhaliya`}
-                description={post.content.substring(0, 160)}
+                title={`${post.title} - SSKhekhaliya`}
+                description={post.content ? post.content.substring(0, 160) : 'An article by SSKhekhaliya.'}
                 name="Saurav SIngh Khekhaliya"
                 type="article"
             />
