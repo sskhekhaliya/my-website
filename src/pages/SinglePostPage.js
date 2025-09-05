@@ -22,22 +22,18 @@ const SinglePostPage = () => {
             document.head.appendChild(styleTag);
         }
 
-        // When on this page, make the progress circle visible
+        // When on this page, make the progress circle visible by overriding the default opacity
         styleTag.innerHTML = `
             .stroke-blue-500 {
                 opacity: 1 !important;
-                transition: opacity 0.3s ease-in-out;
             }
         `;
 
-        // When we leave this page, hide it again
+        // When we leave this page, remove the override so it becomes hidden again
         return () => {
-            styleTag.innerHTML = `
-                .stroke-blue-500 {
-                    opacity: 0 !important;
-                    transition: opacity 0.3s ease-in-out;
-                }
-            `;
+            if (styleTag) {
+                styleTag.innerHTML = "";
+            }
         };
     }, []);
 
@@ -74,7 +70,7 @@ const SinglePostPage = () => {
             <SEO
                 title={`${post.title} - SSKhekhaliya`}
                 description={post.content ? post.content.substring(0, 160) : 'An article by SSKhekhaliya.'}
-                name="Saurav SIngh Khekhaliya"
+                name="Saurav Singh Khekhaliya"
                 type="article"
             />
             <div className="animate-fade-in-up">

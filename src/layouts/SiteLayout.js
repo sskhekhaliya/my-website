@@ -21,16 +21,16 @@ const SiteLayout = ({ children }) => {
     const [selectedTags, setSelectedTags] = useState([]);
 
     useEffect(() => {
-        mainContentRef.current?.scrollTo({ top: 0 });
+        const mainEl = mainContentRef.current;
+        if (!mainEl) return;
+        
+        mainEl.scrollTo({ top: 0 });
         setShowScroll(false);
         setScrollProgress(0);
 
         if (!location.pathname.startsWith('/blog')) {
             setSelectedTags([]); 
         }
-
-        const mainEl = mainContentRef.current;
-        if (!mainEl) return;
 
         const handleScroll = () => {
             setShowScroll(mainEl.scrollTop > 300);
@@ -53,12 +53,12 @@ const SiteLayout = ({ children }) => {
     };
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-
+    
     const circumference = 2 * Math.PI * 20; // 2 * pi * radius
     const strokeDashoffset = circumference - (scrollProgress / 100) * circumference;
 
     return (
-        <AppContext.Provider value={{ posts, loading, error, selectedTags, setSelectedTags, mainContentRef, scrollProgress }}>
+        <AppContext.Provider value={{ posts, loading, error, selectedTags, setSelectedTags, mainContentRef }}>
             <div className="bg-white dark:bg-[#232222] text-gray-800 dark:text-gray-200 min-h-screen transition-colors duration-300 max-w-7xl mx-auto">
                 <div className="flex flex-col md:flex-row h-screen">
                     <div className="flex flex-col flex-grow h-full overflow-hidden">
@@ -94,19 +94,19 @@ const SiteLayout = ({ children }) => {
                                 strokeWidth="3"
                                 className="stroke-gray-200 dark:stroke-gray-700 fill-white dark:fill-gray-800"
                             />
-                            {/* Progress Circle */}
+                            {/* Progress Circle - Hidden by default */}
                             <circle
                                 cx="22"
                                 cy="22"
                                 r="20"
                                 strokeWidth="3"
-                                className="stroke-blue-500 fill-transparent"
+                                className="stroke-blue-500 fill-transparent opacity-0"
                                 style={{
                                     strokeDasharray: circumference,
                                     strokeDashoffset: strokeDashoffset,
                                     transform: 'rotate(-90deg)',
                                     transformOrigin: '50% 50%',
-                                    transition: 'stroke-dashoffset 0.1s linear'
+                                    transition: 'stroke-dashoffset 0.1s linear, opacity 0.3s ease-in-out'
                                 }}
                             />
                         </svg>
@@ -119,4 +119,3 @@ const SiteLayout = ({ children }) => {
 };
 
 export default SiteLayout;
-
