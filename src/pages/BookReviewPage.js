@@ -20,7 +20,12 @@ const BookReviewSkeleton = () => (
       <div className="flex-1 space-y-4">
         <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
         <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
+        <div className="space-y-2 pt-2">
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
+        </div>
+        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3 pt-2"></div>
         <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-32 mt-4"></div>
       </div>
     </div>
@@ -44,13 +49,38 @@ const StarRating = ({ rating }) => (
   </div>
 );
 
+const ExpandableDescription = ({ text, maxLength = 200 }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    if (!text || text.length <= maxLength) {
+        return <p className="text-gray-700 dark:text-gray-300 my-4">{text}</p>;
+    }
+
+    return (
+        <div className="my-4">
+            <p className="text-gray-700 dark:text-gray-300">
+                {isExpanded ? text : `${text.substring(0, maxLength)}...`}
+            </p>
+            <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="text-yellow-600 dark:text-yellow-400 hover:underline font-semibold mt-2 text-sm"
+            >
+                {isExpanded ? 'Read less' : 'Read more'}
+            </button>
+        </div>
+    );
+};
+
 const BookReviewPage = () => {
   const { slug } = useParams();
   const [review, setReview] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const query = `*[_type == "bookReview" && slug.current == $slug][0]`;
+    const query = `*[_type == "bookReview" && slug.current == $slug][0]{
+        ...,
+        "bookDescription": bookDescription
+    }`;
     const params = { slug };
 
     client.fetch(query, params).then((data) => {
@@ -66,7 +96,7 @@ const BookReviewPage = () => {
     <>
       <SEO
         title={`${review.title} - Book Review`}
-        description={`A detailed review and chapter summary of ${review.title} by ${review.author}.`}
+        description={review.bookDescription || `A detailed review and chapter summary of ${review.title} by ${review.author}.`}
         name="Saurav Singh Khekhaliya"
         type="article"
       />
@@ -86,6 +116,9 @@ const BookReviewPage = () => {
           <p className="text-xl text-gray-600 dark:text-gray-400 mb-4">
             by {review.author}
           </p>
+          
+          <ExpandableDescription text={review.bookDescription} />
+          
           <StarRating rating={review.yourRating} />
           {review.affiliateLink && (
             <a
@@ -126,3 +159,4 @@ const BookReviewPage = () => {
 };
 
 export default BookReviewPage;
+

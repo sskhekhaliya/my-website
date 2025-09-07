@@ -8,65 +8,67 @@ import { ArrowRight, BookOpen, Lightbulb, PenSquare, Heart, Sparkles, Cpu } from
 
 // Self-contained component for the "Currently Reading" carousel
 const CurrentlyReadingCarousel = () => {
-    const { books, loading } = useFetchBooks('currently-reading');
-    const [booksWithCovers, setBooksWithCovers] = useState([]);
+  // Use the hook to get books, loading, and error states.
+  const { books, loading, error } = useFetchBooks('currently-reading');
 
-    useEffect(() => {
-        const fetchBookCovers = async () => {
-            const GOOGLE_BOOKS_API_KEY = process.env.REACT_APP_GOOGLE_BOOKS_API_KEY;
-            const booksToFetch = books.slice(0, 5); // Fetch covers for the first 5 books
-
-            const promises = booksToFetch.map(async (book) => {
-                const url = `https://www.googleapis.com/books/v1/volumes?q=intitle:${encodeURIComponent(book.title)}+inauthor:${encodeURIComponent(book.author)}&key=${GOOGLE_BOOKS_API_KEY}`;
-                try {
-                    const response = await fetch(url);
-                    const data = await response.json();
-                    const cover = data.items?.[0]?.volumeInfo?.imageLinks?.thumbnail || `https://placehold.co/400x600/1f2937/ffffff?text=${encodeURIComponent(book.title)}`;
-                    return { ...book, cover };
-                } catch (error) {
-                    console.error("Failed to fetch book cover", error);
-                    return { ...book, cover: `https://placehold.co/400x600/1f2937/ffffff?text=${encodeURIComponent(book.title)}` };
-                }
-            });
-            const results = await Promise.all(promises);
-            setBooksWithCovers(results);
-        };
-
-        if (!loading && books.length > 0) {
-            fetchBookCovers();
-        }
-    }, [books, loading]);
-
-    if (loading) {
-        // Skeleton loader for the carousel
-        return (
-            <div className="flex space-x-6 animate-pulse">
-                {[...Array(3)].map(i => (
-                     <div key={i} className="space-y-3 flex-shrink-0 w-40">
-                        <div className="bg-gray-200 dark:bg-gray-700 rounded-lg aspect-[2/3]"></div>
-                        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
-                        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-                    </div>
-                ))}
-            </div>
-        )
-    }
-
+  // Display a skeleton loader while the data is being fetched.
+  if (loading) {
     return (
-        <Carousel>
-            {booksWithCovers.map((book, index) => (
-                <Link key={index} to="/books/reading" className="snap-start flex-shrink-0 w-40 space-y-2 group">
-                     <div className="overflow-hidden rounded-lg">
-                        <img src={book.cover} alt={book.title} className="w-full h-auto object-cover rounded-lg transform group-hover:scale-105 transition-transform duration-300 aspect-[2/3]" />
-                    </div>
-                    <div className="text-center">
-                        <h4 className="font-semibold text-sm text-gray-800 dark:text-gray-200 line-clamp-2">{book.title}</h4>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{book.author}</p>
-                    </div>
-                </Link>
-            ))}
-        </Carousel>
+      <div className="flex space-x-6 animate-pulse">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="space-y-3 flex-shrink-0 w-40">
+            <div className="bg-gray-200 dark:bg-gray-700 rounded-lg aspect-[2/3]"></div>
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+          </div>
+        ))}
+      </div>
     );
+  }
+
+  // Display an error message if the fetch fails.
+  if (error) {
+    return <p className="text-red-500">{error}</p>;
+  }
+
+  // Display a message if there are no books on the shelf.
+  if (!Array.isArray(books) || books.length === 0) {
+    return <p>Not currently reading any books.</p>;
+  }
+
+  return (
+    <Carousel>
+      {/* Map over the first 5 books for the carousel display. */}
+      {books.slice(0, 5).map((book, index) => {
+        // Use a placeholder if the cover URL is missing.
+        const imgSrc = book.coverUrl || `https://placehold.co/400x600/1f2937/ffffff?text=${encodeURIComponent(book.title)}`;
+        
+        return (
+          <Link 
+            key={index} 
+            to="/books" // Link to a general books page or a specific reading page
+            className="snap-start flex-shrink-0 w-40 space-y-2 group"
+          >
+            <div className="overflow-hidden rounded-lg">
+              <img 
+                src={imgSrc} 
+                alt={book.title}
+                // Fallback to placeholder if the image source fails to load.
+                onError={(e) => (e.target.src = `https://placehold.co/400x600/1f2937/ffffff?text=${encodeURIComponent(book.title)}`)}
+                // Apply consistent styling and hover effects from BookCard.
+                className="w-full aspect-[2/3] object-cover rounded-lg transition-transform duration-300 ease-in-out group-hover:scale-105"
+                loading="lazy"
+              />
+            </div>
+            <div className="text-center">
+              <h4 className="font-semibold text-sm text-gray-800 dark:text-gray-200 line-clamp-2">{book.title}</h4>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{book.author}</p>
+            </div>
+          </Link>
+        );
+      })}
+    </Carousel>
+  );
 };
 
 // Main Homepage Component
