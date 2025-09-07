@@ -11,6 +11,8 @@ import BlogPage from './pages/BlogPage';
 import SinglePostPage from './pages/SinglePostPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsOfUsePage from './pages/TermsOfUsePage';
+import BookReviewPage from './pages/BookReviewPage';
+import EbookReader from './components/EbookReader';
 
 export const ThemeContext = createContext(null);
 
@@ -40,6 +42,10 @@ const ThemedApp = () => {
                     <Route path="/blog/:postId" element={<SinglePostPage />} />
                     <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
                     <Route path="/terms-of-use" element={<TermsOfUsePage />} />
+                    <Route path="/books/*" element={<BooksPage />} />
+                     <Route path="/books/read/:slug" element={<BookReviewPage />} />
+                     <Route path="/books/read/:slug" element={<BookReviewPage />} />
+        <Route path="/books/read/:slug/reader" element={<EbookReader />} /> 
                 </Routes>
             </SiteLayout>
         </div>

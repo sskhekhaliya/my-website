@@ -10,12 +10,6 @@ const useFetchPosts = () => {
             const BLOGGER_ID = process.env.REACT_APP_BLOGGER_ID;
             const API_KEY = process.env.REACT_APP_GOOGLE_BOOKS_API_KEY;
 
-            // --- DEBUGGING LOGS ---
-            console.log("Fetching posts with the following credentials:");
-            console.log("Blogger ID:", BLOGGER_ID);
-            console.log("API Key:", API_KEY);
-            // --- END DEBUGGING LOGS ---
-
             if (!BLOGGER_ID || !API_KEY) {
                 setError("Blogger ID or API Key is missing. Please check your .env file.");
                 setLoading(false);

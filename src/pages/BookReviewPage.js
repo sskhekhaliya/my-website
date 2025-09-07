@@ -1,0 +1,128 @@
+import { useParams, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { client } from "../utils/sanityClient";
+import imageUrlBuilder from "@sanity/image-url";
+import { PortableText } from "@portabletext/react";
+import { Star, ArrowLeft, BookOpen } from "lucide-react";
+import SEO from "../components/SEO";
+
+const builder = imageUrlBuilder(client);
+function urlFor(source) {
+  if (!source) return "";
+  return builder.image(source);
+}
+
+const BookReviewSkeleton = () => (
+  <div className="max-w-4xl mx-auto animate-pulse">
+    <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-8"></div>
+    <div className="flex flex-col md:flex-row md:space-x-8 items-start">
+      <div className="w-48 md:w-64 h-72 md:h-96 bg-gray-200 dark:bg-gray-700 rounded-lg shadow-lg mb-6 md:mb-0"></div>
+      <div className="flex-1 space-y-4">
+        <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
+        <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-32 mt-4"></div>
+      </div>
+    </div>
+    <div className="mt-12 space-y-4">
+      <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
+      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
+    </div>
+  </div>
+);
+
+const StarRating = ({ rating }) => (
+  <div className="flex items-center space-x-1">
+    {Array.from({ length: 5 }, (_, i) => (
+      <Star
+        key={i}
+        size={20}
+        className={i < rating ? "text-yellow-500 fill-yellow-500" : "text-gray-400"}
+      />
+    ))}
+  </div>
+);
+
+const BookReviewPage = () => {
+  const { slug } = useParams();
+  const [review, setReview] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const query = `*[_type == "bookReview" && slug.current == $slug][0]`;
+    const params = { slug };
+
+    client.fetch(query, params).then((data) => {
+      setReview(data);
+      setLoading(false);
+    });
+  }, [slug]);
+
+  if (loading) return <BookReviewSkeleton />;
+  if (!review) return <p>Review not found.</p>;
+
+  return (
+    <>
+      <SEO
+        title={`${review.title} - Book Review`}
+        description={`A detailed review and chapter summary of ${review.title} by ${review.author}.`}
+        name="Saurav Singh Khekhaliya"
+        type="article"
+      />
+
+      <div className="flex flex-col md:flex-row md:space-x-8 items-start mb-12">
+        <img
+          src={
+            review.coverImage
+              ? urlFor(review.coverImage).width(400).url()
+              : "https://placehold.co/400x600/e2e8f0/334155?text=No+Cover"
+          }
+          alt={review.title}
+          className="w-48 md:w-64 rounded-lg shadow-lg mb-6 md:mb-0"
+        />
+        <div className="flex-1">
+          <h1 className="text-4xl font-bold mb-2">{review.title}</h1>
+          <p className="text-xl text-gray-600 dark:text-gray-400 mb-4">
+            by {review.author}
+          </p>
+          <StarRating rating={review.yourRating} />
+          {review.affiliateLink && (
+            <a
+              href={review.affiliateLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block mt-4 bg-yellow-500 text-white font-bold py-2 px-4 rounded hover:bg-yellow-600 transition-colors"
+            >
+              Buy on Amazon
+            </a>
+          )}
+        </div>
+      </div>
+
+      {review.yourReview && (
+        <div className="mb-12">
+          <h2 className="text-3xl font-bold mb-4">My Review</h2>
+          <div className="prose dark:prose-invert max-w-none">
+            <PortableText value={review.yourReview} />
+          </div>
+        </div>
+      )}
+
+      {review.chapterSummaries && review.chapterSummaries.length > 0 && (
+        <div>
+          <h2 className="text-3xl font-bold mb-4">Chapter Summaries</h2>
+          <Link
+            to={`/books/read/${slug}/reader`}
+            className="flex items-center space-x-2 px-6 py-3 bg-gray-800 text-white dark:bg-gray-200 dark:text-black rounded-lg font-semibold hover:bg-gray-700 dark:hover:bg-gray-300 transition-colors"
+          >
+            <BookOpen size={20} />
+            <span>Read Chapter Summaries</span>
+          </Link>
+        </div>
+      )}
+    </>
+  );
+};
+
+export default BookReviewPage;

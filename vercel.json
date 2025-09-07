@@ -1,5 +1,18 @@
 {
+  "functions": {
+    "api/syncGoodreads.js": {
+      "maxDuration": 60
+    }
+  },
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/getGoodreadsShelf" }
+    { "source": "/api/getGoodreadsShelf", "destination": "/api/getGoodreadsShelf" },
+    { "source": "/api/syncGoodreads", "destination": "/api/syncGoodreads" }
+  ],
+  "crons": [
+    {
+      "path": "/api/syncGoodreads",
+      "schedule": "0 5 * * *"
+    }
   ]
 }
+

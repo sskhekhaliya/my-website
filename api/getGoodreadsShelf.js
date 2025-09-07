@@ -3,7 +3,7 @@ const xml2js = require('xml2js');
 
 module.exports = async (req, res) => {
     const { shelf } = req.query;
-    const userId = process.env.GOODREADS_USER_ID;
+    const userId = process.env.REACT_APP_GOODREADS_USER_ID;
 
     if (!shelf || !userId) {
         return res.status(400).json({ error: 'Shelf and User ID are required.' });
