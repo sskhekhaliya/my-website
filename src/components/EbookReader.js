@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { client } from "../utils/sanityClient";
 import { X, ChevronLeft, ChevronRight, List } from "lucide-react";
@@ -11,6 +11,8 @@ const EbookReader = () => {
   const [loading, setLoading] = useState(true);
   const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
   const [isTocOpen, setIsTocOpen] = useState(false);
+  const [chapterProgress, setChapterProgress] = useState(0);
+  const mainContentRef = useRef(null);
 
   useEffect(() => {
     const query =
@@ -31,6 +33,19 @@ const EbookReader = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [slug, navigate]);
 
+  const handleScroll = () => {
+    if (mainContentRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = mainContentRef.current;
+      const totalScrollableHeight = scrollHeight - clientHeight;
+      if (totalScrollableHeight > 0) {
+        const progress = (scrollTop / totalScrollableHeight) * 100;
+        setChapterProgress(progress);
+      } else {
+        setChapterProgress(100);
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen text-gray-800 dark:text-gray-200">
@@ -49,20 +64,37 @@ const EbookReader = () => {
 
   const { chapters } = { chapters: review.chapterSummaries };
   const currentChapter = chapters[currentChapterIndex];
-  const progress = ((currentChapterIndex + 1) / chapters.length) * 100;
+  // Progress for the entire book, based on chapter number
+  const bookProgress = ((currentChapterIndex + 1) / chapters.length) * 100;
 
   const goToChapter = (index) => {
     setCurrentChapterIndex(index);
     setIsTocOpen(false);
+    setChapterProgress(0);
+    if (mainContentRef.current) {
+      mainContentRef.current.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
-  const goToNextChapter = () =>
-    currentChapterIndex < chapters.length - 1 &&
-    setCurrentChapterIndex(currentChapterIndex + 1);
+  const goToNextChapter = () => {
+    if (currentChapterIndex < chapters.length - 1) {
+      setCurrentChapterIndex(currentChapterIndex + 1);
+      setChapterProgress(0);
+      if (mainContentRef.current) {
+        mainContentRef.current.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }
+  };
 
-  const goToPreviousChapter = () =>
-    currentChapterIndex > 0 &&
-    setCurrentChapterIndex(currentChapterIndex - 1);
+  const goToPreviousChapter = () => {
+    if (currentChapterIndex > 0) {
+      setCurrentChapterIndex(currentChapterIndex - 1);
+      setChapterProgress(0);
+      if (mainContentRef.current) {
+        mainContentRef.current.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }
+  };
 
   const TableOfContents = () => (
     <>
@@ -111,32 +143,45 @@ const EbookReader = () => {
 
   return (
     <div className="flex flex-col h-screen text-gray-800 dark:text-gray-200 overflow-hidden">
-      <header className="flex items-center justify-between flex-shrink-0 border-b border-gray-200 dark:border-gray-800">
+      <header className="flex items-center justify-between flex-shrink-0 border-b pb-3 border-gray-200 dark:border-gray-800">
         <Link to={`/books/read/${slug}`} className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors duration-200">
-          <X size={28} />
+          <X size={20} />
         </Link>
-        <h1 className="text-xl font-bold text-center truncate">{review.title}</h1>
+        <h1 className="text-l font-bold text-center truncate">{review.title}</h1>
         <button
           onClick={() => setIsTocOpen(true)}
           className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors duration-200"
         >
-          <List size={28} />
+          <List size={20} />
         </button>
       </header>
 
       <TableOfContents />
 
-      <main className="flex-1 p-3 md:p-12 lg:px-24 xl:px-48 overflow-y-auto pt-2 pb-22">
+      <main 
+        ref={mainContentRef} 
+        onScroll={handleScroll}
+        className="flex-1 p-3 md:p-12 lg:px-24 xl:px-48 overflow-y-auto pt-2 pb-22"
+      >
         <article className="prose dark:prose-invert max-w-3xl mx-auto w-full relative">
-          <h5 className="text-center mt-4 mx-1 mx-5 font-bold mb-4">{currentChapter.chapterTitle}</h5>
+          <h5 className="text-center mt-4 mx-1 mx-5 font-bold mb-4">Chapter {currentChapterIndex + 1}: {currentChapter.chapterTitle}</h5>
           <p className="whitespace-pre-line text-justify text-lg leading-relaxed text-gray-700 dark:text-gray-300">
             {currentChapter.summary}
           </p>
         </article>
       </main>
 
-      <footer className="fixed left-0 bottom-0 w-full p-4 md:px-6 z-50 bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800">
-        <div className="flex items-center justify-between max-w-screen-xl mx-auto">
+      <footer className="fixed left-0 bottom-0 w-full z-50 bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800">
+        {/* Progress bar for the current chapter (at the top border) */}
+        <div className="w-full h-[1px] bg-gray-200 dark:bg-gray-700">
+          <div
+            className="h-full bg-blue-600 transition-all duration-300 ease-out"
+            style={{ width: `${chapterProgress}%` }}
+          ></div>
+        </div>
+
+        <div className="flex items-center justify-between p-4 md:px-6 max-w-screen-xl mx-auto">
+          {/* Previous chapter button */}
           <button
             onClick={goToPreviousChapter}
             disabled={currentChapterIndex === 0}
@@ -145,11 +190,12 @@ const EbookReader = () => {
             <ChevronLeft size={24} />
           </button>
           
+          {/* Progress bar for the entire book (within the footer) */}
           <div className="flex-1 px-4">
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-0.5">
               <div
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
-                style={{ width: `${progress}%` }}
+                className="bg-blue-600 h-0.5 rounded-full transition-all duration-300 ease-out"
+                style={{ width: `${bookProgress}%` }}
               ></div>
             </div>
             <div className="text-center text-sm text-gray-500 dark:text-gray-400 mt-2">
@@ -157,6 +203,7 @@ const EbookReader = () => {
             </div>
           </div>
           
+          {/* Next chapter button */}
           <button
             onClick={goToNextChapter}
             disabled={currentChapterIndex === chapters.length - 1}
