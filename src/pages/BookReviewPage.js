@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { client } from "../utils/sanityClient";
 import imageUrlBuilder from "@sanity/image-url";
 import { PortableText } from "@portabletext/react";
-import { Star, ArrowLeft, BookOpen } from "lucide-react";
+import { Star, BookOpen, Bookmark } from "lucide-react";
 import SEO from "../components/SEO";
 
 const builder = imageUrlBuilder(client);
@@ -142,9 +142,9 @@ const BookReviewPage = () => {
         </div>
       )}
 
-      {review.chapterSummaries && review.chapterSummaries.length > 0 && (
-        <div>
-          <h2 className="text-3xl font-bold mb-4">Chapter Summaries</h2>
+      {/* Button section */}
+      <div className="mt-8 flex flex-wrap gap-4">
+        {review.bookStructure && review.bookStructure.length > 0 && (
           <Link
             to={`/books/read/${slug}/reader`}
             className="flex items-center space-x-2 px-6 py-3 bg-gray-800 text-white dark:bg-gray-200 dark:text-black rounded-lg font-semibold hover:bg-gray-700 dark:hover:bg-gray-300 transition-colors"
@@ -152,11 +152,20 @@ const BookReviewPage = () => {
             <BookOpen size={20} />
             <span>Read Chapter Summaries</span>
           </Link>
-        </div>
-      )}
+        )}
+        {review.highlightsAndNotes && review.highlightsAndNotes.length > 0 && (
+          <Link
+            to={`/books/read/${slug}/highlights`}
+            className="flex items-center space-x-2 px-6 py-3 bg-gray-800 text-white dark:bg-gray-200 dark:text-black rounded-lg font-semibold hover:bg-gray-700 dark:hover:bg-gray-300 transition-colors"
+          >
+            <Bookmark size={20} />
+            <span>Read Highlights</span>
+          </Link>
+        )}
+      </div>
+
     </>
   );
 };
 
 export default BookReviewPage;
-

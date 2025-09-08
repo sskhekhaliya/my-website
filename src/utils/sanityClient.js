@@ -10,13 +10,4 @@ const config = {
   apiVersion: "2023-05-03",
 };
 
-// ✅ Debugging: confirm if environment variables are loaded
-console.log("🔍 Sanity Client Config:", {
-  projectId: config.projectId,
-  dataset: config.dataset,
-  usingToken: !!config.token, // true = token loaded
-  useCdn: config.useCdn,
-  env: process.env.NODE_ENV,
-});
-
 export const client = createClient(config);
