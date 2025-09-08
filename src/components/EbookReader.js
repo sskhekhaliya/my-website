@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { client } from "../utils/sanityClient";
 import { X, ChevronLeft, ChevronRight, List } from "lucide-react";
+import classNames from "classnames";
 
 const EbookReader = () => {
   const { slug } = useParams();
@@ -31,11 +32,19 @@ const EbookReader = () => {
   }, [slug, navigate]);
 
   if (loading) {
-    return <div>Loading Reader...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen text-gray-800 dark:text-gray-200">
+        Loading Reader...
+      </div>
+    );
   }
 
   if (!review || !review.chapterSummaries || review.chapterSummaries.length === 0) {
-    return <div>No chapters available.</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen text-gray-800 dark:text-gray-200">
+        No chapters available.
+      </div>
+    );
   }
 
   const { chapters } = { chapters: review.chapterSummaries };
@@ -58,32 +67,40 @@ const EbookReader = () => {
   const TableOfContents = () => (
     <>
       <div
-        className={`fixed inset-0 bg-black bg-opacity-50 z-50 transition-opacity ${
-          isTocOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
+        className={classNames(
+          "fixed inset-0 bg-black transition-opacity z-40",
+          isTocOpen ? "opacity-30 pointer-events-auto" : "opacity-0 pointer-events-none"
+        )}
         onClick={() => setIsTocOpen(false)}
       />
       <div
-        className={`fixed top-0 left-0 h-full w-4/5 max-w-sm bg-white dark:bg-gray-800 shadow-lg z-50 transition-transform transform ${
+        className={classNames(
+          "fixed top-0 left-0 h-full w-4/5 max-w-sm bg-white dark:bg-gray-950 shadow-2xl z-50 transition-transform duration-300 ease-in-out",
           isTocOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        )}
       >
-        <div className="p-4 flex justify-between items-center border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-lg font-semibold">Table of Contents</h2>
-          <button onClick={() => setIsTocOpen(false)}>
+        <div className="p-6 flex justify-between items-center border-b border-gray-100 dark:border-gray-800">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Table of Contents</h2>
+          <button
+            onClick={() => setIsTocOpen(false)}
+            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors duration-200"
+          >
             <X size={24} />
           </button>
         </div>
-        <ul className="divide-y divide-gray-200 dark:divide-gray-700">
+        <ul className="divide-y divide-gray-100 dark:divide-gray-800 p-4 overflow-y-auto h-[calc(100%-80px)]">
           {chapters.map((chapter, index) => (
             <li key={index}>
               <button
                 onClick={() => goToChapter(index)}
-                className={`w-full text-left px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                  index === currentChapterIndex ? "font-bold" : ""
-                }`}
+                className={classNames(
+                  "w-full text-left px-3 py-4 rounded-lg transition-colors duration-200",
+                  index === currentChapterIndex
+                    ? "font-bold bg-blue-50 dark:bg-blue-900 text-blue-600 dark:text-blue-400"
+                    : "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200"
+                )}
               >
-                Chapter {index + 1}
+                Chapter {index + 1}: <span className="text-sm font-normal break-normal">{chapter.chapterTitle}</span>
               </button>
             </li>
           ))}
@@ -93,51 +110,59 @@ const EbookReader = () => {
   );
 
   return (
-    <div className="flex flex-col h-screen">
-      <header className="p-4 flex items-center justify-between border-b border-gray-200 dark:border-gray-700">
-        <Link to={`/books/read/${slug}`} className="p-2">
+    <div className="flex flex-col h-screen text-gray-800 dark:text-gray-200 overflow-hidden">
+      <header className="flex items-center justify-between flex-shrink-0 border-b border-gray-200 dark:border-gray-800">
+        <Link to={`/books/read/${slug}`} className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors duration-200">
           <X size={28} />
         </Link>
-        <h1 className="text-lg font-semibold truncate">{review.title}</h1>
-        <button onClick={() => setIsTocOpen(true)} className="p-2">
+        <h1 className="text-xl font-bold text-center truncate">{review.title}</h1>
+        <button
+          onClick={() => setIsTocOpen(true)}
+          className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors duration-200"
+        >
           <List size={28} />
         </button>
       </header>
 
       <TableOfContents />
 
-      <main className="flex-1 p-6 md:p-12 overflow-y-auto">
-        <div className="prose dark:prose-invert max-w-none">
-          <p className="whitespace-pre-line text-lg leading-relaxed">
+      <main className="flex-1 p-3 md:p-12 lg:px-24 xl:px-48 overflow-y-auto pt-2 pb-22">
+        <article className="prose dark:prose-invert max-w-3xl mx-auto w-full relative">
+          <h5 className="text-center mt-4 mx-1 mx-5 font-bold mb-4">{currentChapter.chapterTitle}</h5>
+          <p className="whitespace-pre-line text-justify text-lg leading-relaxed text-gray-700 dark:text-gray-300">
             {currentChapter.summary}
           </p>
-        </div>
+        </article>
       </main>
 
-      <footer className="p-4 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
-        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 mb-2">
-          <div
-            className="bg-blue-500 h-1.5 rounded-full transition-all duration-300"
-            style={{ width: `${progress}%` }}
-          ></div>
-        </div>
-        <div className="flex items-center justify-between">
+      <footer className="fixed left-0 bottom-0 w-full p-4 md:px-6 z-50 bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800">
+        <div className="flex items-center justify-between max-w-screen-xl mx-auto">
           <button
             onClick={goToPreviousChapter}
             disabled={currentChapterIndex === 0}
-            className="p-2 disabled:opacity-50"
+            className="p-1 rounded-full text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
           >
-            <ChevronLeft size={28} />
+            <ChevronLeft size={24} />
           </button>
-          <span className="text-sm text-gray-500 dark:text-gray-400">
-            Chapter {currentChapterIndex + 1} of {chapters.length}
-          </span>
+          
+          <div className="flex-1 px-4">
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+              <div
+                className="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
+                style={{ width: `${progress}%` }}
+              ></div>
+            </div>
+            <div className="text-center text-sm text-gray-500 dark:text-gray-400 mt-2">
+              Chapter {currentChapterIndex + 1} of {chapters.length}
+            </div>
+          </div>
+          
           <button
             onClick={goToNextChapter}
             disabled={currentChapterIndex === chapters.length - 1}
-            className="p-2 disabled:opacity-50"
+            className="p-1 rounded-full text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
           >
-            <ChevronRight size={28} />
+            <ChevronRight size={24} />
           </button>
         </div>
       </footer>
