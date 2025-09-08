@@ -114,7 +114,10 @@ const EbookReader = () => {
   }, [slug, navigate]);
 
   // Navigate chapters
-  const goToChapter = (index) => setCurrentChapterIndex(index);
+  const goToChapter = (index) => {
+  setCurrentChapterIndex(index);
+  setIsTocOpen(false);
+};
   const goToNextChapter = () => {
     if (currentChapterIndex < allChapters.length - 1) goToChapter(currentChapterIndex + 1);
   };
