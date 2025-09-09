@@ -12,7 +12,8 @@ import SinglePostPage from './pages/SinglePostPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsOfUsePage from './pages/TermsOfUsePage';
 import BookReviewPage from './pages/BookReviewPage';
-import EbookReader from './components/EbookReader';
+import EbookReader from './pages/EbookReader';
+import BookHighlightsReader from './pages/BookHighlightsReader';
 
 export const ThemeContext = createContext(null);
 
@@ -46,6 +47,7 @@ const ThemedApp = () => {
                      <Route path="/books/read/:slug" element={<BookReviewPage />} />
                      <Route path="/books/read/:slug" element={<BookReviewPage />} />
         <Route path="/books/read/:slug/reader" element={<EbookReader />} /> 
+        <Route path="/books/read/:slug/highlights" element={<BookHighlightsReader />} /> 
                 </Routes>
             </SiteLayout>
         </div>
