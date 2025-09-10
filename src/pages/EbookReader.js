@@ -6,7 +6,7 @@ import classNames from "classnames";
 import { PortableText } from "@portabletext/react";
 
 const EbookReader = () => {
-  const { slug } = useParams();
+  const { slug, chapterIndex } = useParams();
   const navigate = useNavigate();
   const [review, setReview] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -58,17 +58,33 @@ const EbookReader = () => {
   // Load saved chapter + scroll
   useEffect(() => {
     if (!allChapters.length) return;
-    const saved = getSavedProgress();
-    if (saved && saved.currentChapter < allChapters.length) {
-      setCurrentChapterIndex(saved.currentChapter);
-      setTimeout(() => {
-        if (mainContentRef.current) {
-          const scrollTop = saved.scrollPositions?.[saved.currentChapter] || 0;
-          mainContentRef.current.scrollTo({ top: scrollTop });
-        }
-      }, 100);
+
+    let initialIndex = 0;
+    if (chapterIndex && !isNaN(chapterIndex)) {
+      // Subtract 1 because URL chapterIndex is 1-based
+      const index = parseInt(chapterIndex, 10) - 1;
+      if (index >= 0 && index < allChapters.length) {
+        initialIndex = index;
+      }
+    } else {
+      const saved = getSavedProgress();
+      if (saved && saved.currentChapter < allChapters.length) {
+        initialIndex = saved.currentChapter;
+      }
     }
-  }, [allChapters]);
+
+    setCurrentChapterIndex(initialIndex);
+
+    // Set timeout to ensure DOM is rendered before scrolling
+    setTimeout(() => {
+      if (mainContentRef.current) {
+        const saved = getSavedProgress();
+        const scrollTop = saved?.scrollPositions?.[initialIndex] || 0;
+        mainContentRef.current.scrollTo({ top: scrollTop });
+      }
+    }, 100);
+  }, [allChapters, chapterIndex]);
+
 
   // Save progress (chapter + scroll per chapter)
   const saveProgress = (chapterIndex, scrollTop) => {
@@ -115,9 +131,11 @@ const EbookReader = () => {
 
   // Navigate chapters
   const goToChapter = (index) => {
-  setCurrentChapterIndex(index);
-  setIsTocOpen(false);
-};
+    setCurrentChapterIndex(index);
+    // Use `replace` to prevent adding a new history entry for each chapter
+    navigate(`/books/read/${slug}/p/${index + 1}`, { replace: true });
+    setIsTocOpen(false);
+  };
   const goToNextChapter = () => {
     if (currentChapterIndex < allChapters.length - 1) goToChapter(currentChapterIndex + 1);
   };

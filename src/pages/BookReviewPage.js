@@ -1,5 +1,5 @@
+import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { useState, useEffect } from "react";
 import { client } from "../utils/sanityClient";
 import imageUrlBuilder from "@sanity/image-url";
 import { PortableText } from "@portabletext/react";
@@ -75,8 +75,23 @@ const BookReviewPage = () => {
   const { slug } = useParams();
   const [review, setReview] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [lastChapterIndex, setLastChapterIndex] = useState(1); // Default to page 1
 
   useEffect(() => {
+    // Check local storage for the last saved chapter index
+    try {
+      const savedProgress = localStorage.getItem(`ebook-${slug}`);
+      if (savedProgress) {
+        const data = JSON.parse(savedProgress);
+        // Add 1 to the saved 0-based index to get the 1-based URL
+        const lastVisitedChapter = data.currentChapter + 1;
+        setLastChapterIndex(lastVisitedChapter);
+      }
+    } catch (e) {
+      console.error("Failed to parse saved progress from localStorage", e);
+    }
+
+    // Fetch the book review data
     const query = `*[_type == "bookReview" && slug.current == $slug][0]{
         ...,
         "bookDescription": bookDescription
@@ -146,7 +161,7 @@ const BookReviewPage = () => {
       <div className="mt-8 flex flex-wrap gap-4">
         {review.bookStructure && review.bookStructure.length > 0 && (
           <Link
-            to={`/books/read/${slug}/reader`}
+            to={`/books/read/${slug}/p/${lastChapterIndex}`}
             className="flex items-center space-x-2 px-6 py-3 bg-gray-800 text-white dark:bg-gray-200 dark:text-black rounded-lg font-semibold hover:bg-gray-700 dark:hover:bg-gray-300 transition-colors"
           >
             <BookOpen size={20} />

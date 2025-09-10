@@ -46,8 +46,9 @@ const ThemedApp = () => {
                     <Route path="/books/*" element={<BooksPage />} />
                      <Route path="/books/read/:slug" element={<BookReviewPage />} />
                      <Route path="/books/read/:slug" element={<BookReviewPage />} />
-        <Route path="/books/read/:slug/reader" element={<EbookReader />} /> 
-        <Route path="/books/read/:slug/highlights" element={<BookHighlightsReader />} /> 
+                     <Route path="/books/read/:slug/reader" element={<EbookReader />} />
+                     <Route path="/books/read/:slug/highlights" element={<BookHighlightsReader />} />
+                     <Route path="/books/read/:slug/p/:chapterIndex" element={<EbookReader />} />
                 </Routes>
             </SiteLayout>
         </div>
