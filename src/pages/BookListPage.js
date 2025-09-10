@@ -27,7 +27,16 @@ const BookListPage = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const query = '*[_type == "bookReview"] | order(_createdAt desc)';
+    // We now request the 'hasChapters' field in the query
+    const query = `
+  *[_type == "bookReview"] {
+  ...,
+  "hasChapters": count(bookStructure) > 0 && count(bookStructure[_type == "part" && count(chapters) > 0 || _type == "chapter"]) > 0,
+  "hasReview": defined(yourReview) && count(yourReview) > 0 && yourReview[0].children[0].text != "",
+  "isTagged": (count(bookStructure) > 0 && count(bookStructure[_type == "part" && count(chapters) > 0 || _type == "chapter"]) > 0) || (defined(yourReview) && count(yourReview) > 0 && yourReview[0].children[0].text != "")
+} | order(isTagged asc, _updatedAt desc)
+`;
+    
     client
       .fetch(query)
       .then((data) => {
@@ -65,7 +74,7 @@ const BookListPage = () => {
         <Link
           key={book._id}
           to={`/books/read/${book.slug.current}`}
-          className="group space-y-2"
+          className="group space-y-2 relative"
         >
           <div className="relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
             <img
@@ -78,6 +87,19 @@ const BookListPage = () => {
               loading="lazy"
               className="w-full h-auto object-cover rounded-lg transform group-hover:scale-105 transition-transform duration-300 aspect-[2/3]"
             />
+            
+            {/* Conditional rendering for the two tags */}
+    {book.hasChapters && (
+      <div className="absolute top-2 right-2 px-2 py-1 bg-green-500 text-white rounded-full text-xs font-bold shadow-md opacity-90">
+        Summarized
+      </div>
+    )}
+    
+    {!book.hasChapters && book.hasReview && (
+      <div className="absolute top-2 right-2 px-2 py-1 bg-gray-500 text-white rounded-full text-xs font-bold shadow-md opacity-90">
+        Reviewed
+      </div>
+    )}
             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
               <span className="text-white font-semibold text-sm">Read Review</span>
             </div>

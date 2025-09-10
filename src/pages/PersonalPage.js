@@ -5,6 +5,7 @@ import { AppContext } from '../layouts/SiteLayout';
 import useFetchBooks from '../hooks/useFetchBooks';
 import Carousel from '../components/Carousel';
 import { ArrowRight, BookOpen, Lightbulb, PenSquare, Heart, Sparkles, Cpu } from 'lucide-react';
+import RecentSummaries from '../components/RecentSummaries';
 
 // Self-contained component for the "Currently Reading" carousel
 const CurrentlyReadingCarousel = () => {
@@ -135,7 +136,7 @@ const PersonalPage = () => {
                         )}
                      </Carousel>
                 </div>
-
+                        <RecentSummaries />
                 {/* Currently Reading Section */}
                 <div className="animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
                      <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-50 mb-4 flex items-center">

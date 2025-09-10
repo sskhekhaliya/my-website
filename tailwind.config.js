@@ -8,6 +8,19 @@ module.exports = {
     extend: {},
   },
   plugins: [
-    require('@tailwindcss/typography'), // Add this line
+    require('@tailwindcss/typography'),
+    require('tailwind-scrollbar-hide'),
+    function({ addUtilities }) {
+      const newUtilities = {
+        '.no-scrollbar::-webkit-scrollbar': {
+          display: 'none',
+        },
+        '.no-scrollbar': {
+          '-ms-overflow-style': 'none', /* IE and Edge */
+          'scrollbar-width': 'none', /* Firefox */
+        },
+      };
+      addUtilities(newUtilities);
+    }, // Add this line
   ],
 }

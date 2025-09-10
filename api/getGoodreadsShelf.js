@@ -31,8 +31,6 @@ module.exports = async (req, res) => {
             
             // Remove Goodreads's image size specifier to get the highest resolution version
             const highResUrl = baseUrl ? baseUrl.replace(/\._S[XY]\d+(_)?/, '') : null;
-            
-            console.log(`[DEBUG] Cover URL for "${item.title}": ${highResUrl}`);
 
             return {
                 title: item.title,

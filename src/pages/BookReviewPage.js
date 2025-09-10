@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { client } from "../utils/sanityClient";
 import imageUrlBuilder from "@sanity/image-url";
-import { PortableText } from "@portabletext/react";
 import { Star, BookOpen, Bookmark } from "lucide-react";
 import SEO from "../components/SEO";
+import { PortableText } from "@portabletext/react";
 
 const builder = imageUrlBuilder(client);
 function urlFor(source) {
@@ -21,9 +21,9 @@ const BookReviewSkeleton = () => (
         <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
         <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
         <div className="space-y-2 pt-2">
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
         </div>
         <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3 pt-2"></div>
         <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-32 mt-4"></div>
@@ -50,32 +50,50 @@ const StarRating = ({ rating }) => (
 );
 
 const ExpandableDescription = ({ text, maxLength = 200 }) => {
-    const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
-    if (!text || text.length <= maxLength) {
-        return <p className="text-gray-700 dark:text-gray-300 my-4">{text}</p>;
-    }
+  if (!text || text.length <= maxLength) {
+    return <p className="text-gray-700 dark:text-gray-300 my-4">{text}</p>;
+  }
 
-    return (
-        <div className="my-4">
-            <p className="text-gray-700 dark:text-gray-300">
-                {isExpanded ? text : `${text.substring(0, maxLength)}...`}
-            </p>
-            <button
-                onClick={() => setIsExpanded(!isExpanded)}
-                className="text-yellow-600 dark:text-yellow-400 hover:underline font-semibold mt-2 text-sm"
-            >
-                {isExpanded ? 'Read less' : 'Read more'}
-            </button>
-        </div>
-    );
+  return (
+    <div className="my-4">
+      <p className="text-gray-700 dark:text-gray-300">
+        {isExpanded ? text : `${text.substring(0, maxLength)}...`}
+      </p>
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="text-yellow-600 dark:text-yellow-400 hover:underline font-semibold mt-2 text-sm"
+      >
+        {isExpanded ? 'Read less' : 'Read more'}
+      </button>
+    </div>
+  );
 };
+
+// Helper function to extract plain text from Portable Text array
+const toPlainText = (blocks) => {
+  if (!blocks || !Array.isArray(blocks)) {
+    return "";
+  }
+  return blocks
+    .map((block) => {
+      // If it's not a text block, just ignore it for this summary
+      if (block._type !== "block" || !block.children) {
+        return "";
+      }
+      return block.children.map((child) => child.text).join("");
+    })
+    .join("\n\n"); // Join paragraphs with double newlines
+};
+
 
 const BookReviewPage = () => {
   const { slug } = useParams();
   const [review, setReview] = useState(null);
   const [loading, setLoading] = useState(true);
   const [lastChapterIndex, setLastChapterIndex] = useState(1); // Default to page 1
+  const [isReviewExpanded, setIsReviewExpanded] = useState(false); // New state for review expansion
 
   useEffect(() => {
     // Check local storage for the last saved chapter index
@@ -94,7 +112,7 @@ const BookReviewPage = () => {
     // Fetch the book review data
     const query = `*[_type == "bookReview" && slug.current == $slug][0]{
         ...,
-        "bookDescription": bookDescription
+        "bookDescription": bookDescription // Assuming this is plain text or an easily extractable block
     }`;
     const params = { slug };
 
@@ -106,6 +124,22 @@ const BookReviewPage = () => {
 
   if (loading) return <BookReviewSkeleton />;
   if (!review) return <p>Review not found.</p>;
+
+  // Convert PortableText review to plain text for length check
+  const plainTextReview = toPlainText(review.yourReview);
+  const reviewMaxLength = 500; // Define a suitable max length for the review summary
+
+  // Portable Text components for rich text rendering
+  const portableTextComponents = {
+    // You can customize block types here if needed
+    block: {
+      h1: ({children}) => <h1 className="text-3xl font-bold my-4">{children}</h1>,
+      h2: ({children}) => <h2 className="text-2xl font-bold my-3">{children}</h2>,
+      normal: ({children}) => <p className="mb-4">{children}</p>,
+    },
+    // You might also need to define custom types for images, etc.
+  };
+
 
   return (
     <>
@@ -132,7 +166,8 @@ const BookReviewPage = () => {
             by {review.author}
           </p>
           
-          <ExpandableDescription text={review.bookDescription} />
+          {/* Using your existing ExpandableDescription for the main book description */}
+          <ExpandableDescription text={review.bookDescription} /> 
           
           <StarRating rating={review.yourRating} />
           {review.affiliateLink && (
@@ -149,14 +184,44 @@ const BookReviewPage = () => {
       </div>
 
       {review.yourReview && (
-        <div className="mb-12">
-          <h2 className="text-3xl font-bold mb-4">My Review</h2>
-          <div className="prose dark:prose-invert max-w-none">
-            <PortableText value={review.yourReview} />
-          </div>
-        </div>
+  <div className="mb-12">
+    <h2 className="text-3xl font-bold mb-4">My Review</h2>
+    <div className="prose dark:prose-invert max-w-none">
+      {/* Check if the review has more than a few blocks */}
+      {review.yourReview.length > 2 && !isReviewExpanded ? (
+        <>
+          {/* Render only the first few blocks */}
+          <PortableText
+            value={review.yourReview.slice(0, 2)} // Show the first 3 blocks
+            components={portableTextComponents}
+          />
+          <button
+            onClick={() => setIsReviewExpanded(true)}
+            className="text-yellow-600 dark:text-yellow-400 hover:underline font-semibold mt-2 text-sm"
+          >
+            Read more
+          </button>
+        </>
+      ) : (
+        <>
+          {/* Render the full review */}
+          <PortableText
+            value={review.yourReview}
+            components={portableTextComponents}
+          />
+          {review.yourReview.length > 3 && isReviewExpanded && (
+            <button
+              onClick={() => setIsReviewExpanded(false)}
+              className="text-yellow-600 dark:text-yellow-400 hover:underline font-semibold mt-2 text-sm"
+            >
+              Read less
+            </button>
+          )}
+        </>
       )}
-
+    </div>
+  </div>
+)}
       {/* Button section */}
       <div className="mt-8 flex flex-wrap gap-4">
         {review.bookStructure && review.bookStructure.length > 0 && (
@@ -178,7 +243,6 @@ const BookReviewPage = () => {
           </Link>
         )}
       </div>
-
     </>
   );
 };

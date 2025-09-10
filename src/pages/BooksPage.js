@@ -21,8 +21,8 @@ const BooksPage = () => (
                 <Routes>
                     <Route path="/" element={<Navigate to="writing" replace />} />
                     <Route path="writing" element={<WritingSection />} />
-                    <Route path="reading" element={<GoodreadsBookList shelf="currently-reading" />} />
                     <Route path="read" element={<BookListPage />} />
+                    <Route path="reading" element={<GoodreadsBookList shelf="currently-reading" />} />
                     <Route path="to-read" element={<GoodreadsBookList shelf="to-read" />} />
                 </Routes>
             </div>

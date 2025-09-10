@@ -1,6 +1,7 @@
 const fetch = require('node-fetch');
 const xml2js = require('xml2js');
 const { createClient } = require('@sanity/client');
+const { v4: uuidv4 } = require('uuid');
 
 // Configure Sanity client
 const sanityClient = createClient({
@@ -118,19 +119,18 @@ module.exports = async (req, res) => {
                     transaction.patch(existingBook.id, { set: patchData });
                 }
             } else { // --- UPDATED: Create new documents with description ---
-                const newDoc = {
-                    _type: 'bookReview',
-                    title: book.title,
-                    author: book.author,
-                    // --- NEW: Add book description to new document ---
-                    bookDescription: stripHtml(book.description),
-                    slug: { _type: 'slug', current: slugify(book.title) },
-                    yourRating: 3,
-                    yourReview: [{ _type: 'block', style: 'normal', children: [{ _type: 'span', text: 'Write your review here...' }] }],
-                    ...(imageAsset && { coverImage: { _type: 'image', asset: { _type: 'reference', _ref: imageAsset._id } } }),
-                };
-                transaction.create(newDoc);
-            }
+    const newDoc = {
+        _type: 'bookReview',
+        title: book.title,
+        author: book.author,
+        bookDescription: stripHtml(book.description),
+        slug: { _type: 'slug', current: slugify(book.title) },
+        yourRating: 0,
+        yourReview: [{ _key: uuidv4(), _type: 'block', style: 'normal', children: [{ _type: 'span', text: '' }] }],
+        ...(imageAsset && { coverImage: { _type: 'image', asset: { _type: 'reference', _ref: imageAsset._id } } }),
+    };
+    transaction.create(newDoc);
+}
         });
 
         if (transaction.operations.length === 0) {
