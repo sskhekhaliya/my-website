@@ -230,7 +230,7 @@ const EbookReader = () => {
 
       <TableOfContents />
 
-      <main ref={mainContentRef} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} onClick={handleClick} className="flex-1 p-3 md:p-12 lg:px-24 xl:px-48 overflow-y-auto pt-2 pb-22 cursor-pointer">
+      <main ref={mainContentRef} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} onClick={handleClick} className="flex-1 p-3 md:p-12 lg:px-24 xl:px-48 overflow-y-auto pt-2 pb-[75px] pb-22 cursor-pointer">
         <article className="prose dark:prose-invert max-w-3xl mx-auto w-full relative">
           <h5 className="text-center mt-4 mx-1 mx-5 font-bold mb-4">{currentChapter.chapterTitle}</h5>
           <div className="text-justify text-lg leading-relaxed text-gray-700 dark:text-gray-300">
