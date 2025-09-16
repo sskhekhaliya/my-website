@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import useSanityBooks from '../hooks/useSanityBooks';
 import Carousel from '../components/Carousel';
-import { BookOpen } from 'lucide-react';
+import { ArrowRight, BookOpen } from 'lucide-react';
 
 const RecentSummaries = () => {
   const { books, loading, error } = useSanityBooks('summarized-books');
@@ -83,6 +83,14 @@ const RecentSummaries = () => {
           );
         })}
       </Carousel>
+      <div className="mt-4">
+        <Link
+          to="/books/read"
+          className="text-sm text-blue-500 hover:underline flex items-center"
+        >
+          View all summaries <ArrowRight className="ml-1" size={16} />
+        </Link>
+      </div>
     </div>
   );
 };

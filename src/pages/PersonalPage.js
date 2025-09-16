@@ -110,9 +110,13 @@ const PersonalPage = () => {
 
                 {/* Latest Blog Posts Section */}
                 <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-                    <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-50 mb-4 flex items-center">
-                        <Lightbulb className="mr-3 text-gray-400" /> Latest Thoughts
-                    </h2>
+<h2 className="text-3xl font-bold text-gray-900 dark:text-gray-50 mb-4 flex items-center">
+        <Lightbulb className="mr-3 text-gray-400" /> Latest Thoughts
+      </h2>
+      <p className="mb-6 text-base text-gray-600 dark:text-gray-400 max-w-2xl">
+        A collection of my thoughts on technology, self-improvement, and philosophical ideas.
+      </p>
+
                      <Carousel>
                         {postsLoading ? (
                              [...Array(3)].map(i => (
@@ -135,9 +139,17 @@ const PersonalPage = () => {
                             ))
                         )}
                      </Carousel>
+                     <div className="mt-4">
+        <Link
+          to="/blog"
+          className="text-sm text-blue-500 hover:underline flex items-center"
+        >
+          Read all blog posts <ArrowRight className="ml-1" size={16} />
+        </Link>
+      </div>
                 </div>
                         <RecentSummaries />
-                {/* Currently Reading Section */}
+                {/* Summary adding books */}
                 <div className="animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
                      <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-50 mb-4 flex items-center">
                         <BookOpen className="mr-3 text-gray-400" /> Currently Reading
