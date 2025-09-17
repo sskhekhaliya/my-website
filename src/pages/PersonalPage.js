@@ -6,6 +6,7 @@ import useFetchBooks from '../hooks/useFetchBooks';
 import Carousel from '../components/Carousel';
 import { ArrowRight, BookOpen, Lightbulb, PenSquare, Heart, Sparkles, Cpu } from 'lucide-react';
 import RecentSummaries from '../components/RecentSummaries';
+import PostCarousel from '../components/PostCarousel';
 
 // Self-contained component for the "Currently Reading" carousel
 const CurrentlyReadingCarousel = () => {
@@ -117,28 +118,7 @@ const PersonalPage = () => {
         A collection of my thoughts on technology, self-improvement, and philosophical ideas.
       </p>
 
-                     <Carousel>
-                        {postsLoading ? (
-                             [...Array(3)].map(i => (
-                                 <div key={i} className="snap-start flex-shrink-0 w-72 space-y-3 animate-pulse">
-                                    <div className="bg-gray-200 dark:bg-gray-700 rounded-lg aspect-video"></div>
-                                    <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
-                                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-                                </div>
-                            ))
-                        ) : (
-                            latestPosts.map((post, index) => (
-                                <Link key={index} to={`/blog/${post.id}`} className="snap-start flex-shrink-0 w-72 space-y-2 group">
-                                    <div className="overflow-hidden rounded-lg">
-                                        <img src={getPostThumbnail(post.content)} alt={post.title} className="w-full h-auto object-cover rounded-lg transform group-hover:scale-105 transition-transform duration-300 aspect-video" />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold text-lg text-gray-800 dark:text-gray-200 line-clamp-2">{post.title}</h4>
-                                    </div>
-                                </Link>
-                            ))
-                        )}
-                     </Carousel>
+                     <PostCarousel />
                      <div className="mt-4">
         <Link
           to="/blog"

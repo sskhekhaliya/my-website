@@ -4,6 +4,7 @@ import { AppContext } from '../layouts/SiteLayout';
 import { ArrowLeft, Clock } from 'lucide-react';
 import SEO from '../components/SEO';
 import { SinglePostSkeleton } from '../components/SkeletonCard';
+import PostCarousel from '../components/PostCarousel';
 
 const SinglePostPage = () => {
     const { posts, loading, error, setSelectedTags } = useContext(AppContext);
@@ -78,7 +79,7 @@ const SinglePostPage = () => {
                     <ArrowLeft size={18} />
                     <span>Back to Blog</span>
                 </Link>
-                <article className="space-y-4">
+                <article className="space-y-4 mb-16">
                     <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-50">{post.title}</h1>
                     <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
                         <span>{new Date(post.published).toLocaleDateString()}</span>
@@ -106,6 +107,11 @@ const SinglePostPage = () => {
                         dangerouslySetInnerHTML={{ __html: post.content }}
                     />
                 </article>
+                <hr/>
+                <div className="mt-10 mb-5">
+                    <h4 className="text-2xl font-semibold mb-0 text-gray-900 dark:text-gray-50">More from the blog</h4>
+                <PostCarousel />
+                </div>
             </div>
         </>
     );
