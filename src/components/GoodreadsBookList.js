@@ -8,9 +8,9 @@ const useFetchBooks = (shelf) => {
 
   useEffect(() => {
     if (!shelf) {
-        setLoading(false);
-        return;
-    };
+      setLoading(false);
+      return;
+    }
 
     const fetchBooks = async () => {
       setLoading(true);
@@ -19,7 +19,7 @@ const useFetchBooks = (shelf) => {
         const response = await fetch(`/api/getGoodreadsShelf?shelf=${shelf}`);
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to fetch book list.');
+          throw new Error(errorData.error || "Failed to fetch book list.");
         }
         const data = await response.json();
         setBooks(data);
@@ -36,7 +36,6 @@ const useFetchBooks = (shelf) => {
   return { books, loading, error };
 };
 
-
 const GoodreadsSkeleton = () => (
   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 animate-pulse">
     {[...Array(10)].map((_, i) => (
@@ -51,10 +50,12 @@ const GoodreadsSkeleton = () => (
 
 const BookCard = ({ title, author, coverUrl }) => {
   const affiliateLink = `https://www.amazon.in/s?k=${encodeURIComponent(
-    `${title} ${author}`
+    `${title} ${author}`,
   )}&tag=${process.env.REACT_APP_AMAZON_AFFILIATE_TAG}`;
 
-  const imgSrc = coverUrl || `https://placehold.co/400x600/1f2937/ffffff?text=${encodeURIComponent(title)}`;
+  const imgSrc =
+    coverUrl ||
+    `https://placehold.co/400x600/1f2937/ffffff?text=${encodeURIComponent(title)}`;
 
   return (
     <a
@@ -69,7 +70,7 @@ const BookCard = ({ title, author, coverUrl }) => {
           alt={title}
           onError={(e) =>
             (e.target.src = `https://placehold.co/400x600/1f2937/ffffff?text=${encodeURIComponent(
-              title
+              title,
             )}`)
           }
           // --- THIS IS THE FIX ---
@@ -97,10 +98,10 @@ const GoodreadsBookList = ({ shelf }) => {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
       {books.map((book, i) => (
-        <BookCard 
-          key={i} 
-          title={book.title} 
-          author={book.author} 
+        <BookCard
+          key={i}
+          title={book.title}
+          author={book.author}
           coverUrl={book.coverUrl}
         />
       ))}
@@ -109,4 +110,3 @@ const GoodreadsBookList = ({ shelf }) => {
 };
 
 export default GoodreadsBookList;
-

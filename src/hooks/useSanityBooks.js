@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { client } from '../utils/sanityClient';
+import { useState, useEffect } from "react";
+import { client } from "../utils/sanityClient";
 
 const useSanityBooks = (queryType) => {
   const [books, setBooks] = useState([]);
@@ -7,10 +7,10 @@ const useSanityBooks = (queryType) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    let query = '';
+    let query = "";
 
     // A dedicated query for summarized books
-    if (queryType === 'summarized-books') {
+    if (queryType === "summarized-books") {
       query = `
         *[_type == "bookReview" && defined(bookStructure) && count(bookStructure[_type == "part" && count(chapters) > 0 || _type == "chapter"]) > 0] {
           title,
@@ -26,14 +26,15 @@ const useSanityBooks = (queryType) => {
       return;
     }
 
-    client.fetch(query)
+    client
+      .fetch(query)
       .then((data) => {
         setBooks(data || []);
         setLoading(false);
       })
       .catch((err) => {
-        console.error('Failed to fetch from Sanity:', err);
-        setError('Could not load data.');
+        console.error("Failed to fetch from Sanity:", err);
+        setError("Could not load data.");
         setLoading(false);
       });
   }, [queryType]);

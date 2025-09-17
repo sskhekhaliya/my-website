@@ -23,10 +23,7 @@ const BookTabs = () => {
       const tabRect = tab.getBoundingClientRect();
       const navRect = nav.getBoundingClientRect();
       const scrollOffset =
-        tabRect.left -
-        navRect.left +
-        tab.offsetWidth / 2 -
-        nav.offsetWidth / 2;
+        tabRect.left - navRect.left + tab.offsetWidth / 2 - nav.offsetWidth / 2;
       nav.scrollBy({ left: scrollOffset, behavior: "smooth" });
     }
   };
@@ -81,10 +78,7 @@ const BookTabs = () => {
 
   return (
     <div className="relative">
-      <div
-        ref={navRef}
-        className="flex space-x-6 overflow-x-auto no-scrollbar"
-      >
+      <div ref={navRef} className="flex space-x-6 overflow-x-auto no-scrollbar">
         <TabButton to="/books/writing">Writing</TabButton>
         <TabButton to="/books/read">Read</TabButton>
         <TabButton to="/books/reading">Currently Reading</TabButton>

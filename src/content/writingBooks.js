@@ -1,7 +1,8 @@
 const writingBooks = [
   {
     title: "Eklavya – अधूरी प्रतिज्ञा (Part 1)",
-    description: "Mythological fiction exploring the untold journey of Eklavya.",
+    description:
+      "Mythological fiction exploring the untold journey of Eklavya.",
     progress: "Concept",
     chaptersCompleted: 0,
   },

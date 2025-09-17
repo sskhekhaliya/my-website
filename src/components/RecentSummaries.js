@@ -1,11 +1,11 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import useSanityBooks from '../hooks/useSanityBooks';
-import Carousel from '../components/Carousel';
-import { ArrowRight, BookOpen } from 'lucide-react';
+import React from "react";
+import { Link } from "react-router-dom";
+import useSanityBooks from "../hooks/useSanityBooks";
+import Carousel from "../components/Carousel";
+import { ArrowRight, BookOpen } from "lucide-react";
 
 const RecentSummaries = () => {
-  const { books, loading, error } = useSanityBooks('summarized-books');
+  const { books, loading, error } = useSanityBooks("summarized-books");
 
   if (loading) {
     return (
@@ -25,28 +25,33 @@ const RecentSummaries = () => {
     return <p className="text-red-500">{error}</p>;
   }
 
-  const summarizedBooks = books.filter(
-    (book) => book.slug && book.slug.current
-  ).reverse(); // <-- This is the new line of code
+  const summarizedBooks = books
+    .filter((book) => book.slug && book.slug.current)
+    .reverse(); // <-- This is the new line of code
 
   if (!Array.isArray(summarizedBooks) || summarizedBooks.length === 0) {
-    return <p className="text-gray-500 dark:text-gray-400">No recent summaries available.</p>;
+    return (
+      <p className="text-gray-500 dark:text-gray-400">
+        No recent summaries available.
+      </p>
+    );
   }
 
   return (
-    <div className="animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+    <div className="animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
       <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-50 mb-4 flex items-center">
         <BookOpen className="mr-3 text-gray-400" /> Recent Summaries
       </h2>
       <p className="mb-6 text-base text-gray-600 dark:text-gray-400 max-w-2xl">
-        A collection of recently summarized books. Click to find chapter-wise detailed summaries and personal highlights.
+        A collection of recently summarized books. Click to find chapter-wise
+        detailed summaries and personal highlights.
       </p>
       <Carousel>
         {summarizedBooks.slice(0, 5).map((book, index) => {
           const imgSrc =
             book.coverUrl ||
             `https://placehold.co/400x600/1f2937/ffffff?text=${encodeURIComponent(
-              book.title
+              book.title,
             )}`;
 
           return (
@@ -61,14 +66,16 @@ const RecentSummaries = () => {
                   alt={book.title}
                   onError={(e) =>
                     (e.target.src = `https://placehold.co/400x600/1f2937/ffffff?text=${encodeURIComponent(
-                      book.title
+                      book.title,
                     )}`)
                   }
                   className="w-full aspect-[2/3] object-cover rounded-lg transition-transform duration-300 ease-in-out group-hover:scale-105"
                   loading="lazy"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                    <span className="text-white font-semibold text-sm">Read More</span>
+                  <span className="text-white font-semibold text-sm">
+                    Read More
+                  </span>
                 </div>
               </div>
               <div className="text-center">

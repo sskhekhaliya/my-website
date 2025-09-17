@@ -3,10 +3,8 @@ import writingBooks from "../content/writingBooks";
 
 const WritingSection = () => {
   const statusColors = {
-    Concept:
-      "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
-    Writing:
-      "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
+    Concept: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
+    Writing: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
   };
 
   return (
