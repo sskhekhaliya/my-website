@@ -4,7 +4,7 @@ import SEO from "../components/SEO";
 const FitnessPage = () => (
   <>
     <SEO
-      title="Fitness & Brand - S. S. Khekhaliya"
+      title="Fitness & Brand - SSKhekhaliya"
       description="Explore my fitness journey, vlogs, and my protein bars brand."
       name="Saurav SIngh Khekhaliya"
       type="website"

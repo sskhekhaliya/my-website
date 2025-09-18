@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { AppContext } from "../layouts/SiteLayout";
 import Carousel from "./Carousel";
 
-// Function to extract the first image URL from a blog post's HTML content
 const getPostThumbnail = (htmlContent) => {
   const div = document.createElement("div");
   div.innerHTML = htmlContent;
@@ -13,11 +12,28 @@ const getPostThumbnail = (htmlContent) => {
     : `https://placehold.co/600x400/232222/FFF?text=Blog+Post`;
 };
 
-const PostCarousel = () => {
+const PostCarousel = ({ excludeId }) => {
   const { posts, loading: postsLoading } = useContext(AppContext);
 
-  // Get the latest 3 posts, or an empty array if loading or no posts exist
-  const latestPosts = !postsLoading && posts ? posts.slice(0, 5) : [];
+  // Filter out current post if excludeId is provided
+  const filteredPosts =
+    !postsLoading && posts
+      ? excludeId
+        ? posts.filter((post) => post.id !== excludeId)
+        : posts
+      : [];
+
+  // Always take up to 5 posts
+  const latestPosts = filteredPosts.slice(0, 5);
+
+  // Nothing to show
+  if (!postsLoading && latestPosts.length === 0) {
+    return (
+      <div className="text-gray-500 dark:text-gray-400 text-sm py-4">
+        No posts available.
+      </div>
+    );
+  }
 
   return (
     <Carousel>
@@ -32,9 +48,9 @@ const PostCarousel = () => {
               <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
             </div>
           ))
-        : latestPosts.map((post, index) => (
+        : latestPosts.map((post) => (
             <Link
-              key={index}
+              key={post.id}
               to={`/blog/${post.slug}/${post.id}`}
               className="snap-start flex-shrink-0 w-72 space-y-2 group"
             >

@@ -1,10 +1,52 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { AppContext } from "../layouts/SiteLayout";
-import { ArrowLeft, Clock } from "lucide-react";
+import { ArrowLeft, Clock, Twitter, Linkedin, Facebook } from "lucide-react";
 import SEO from "../components/SEO";
 import { SinglePostSkeleton } from "../components/SkeletonCard";
 import PostCarousel from "../components/PostCarousel";
+
+// A new component for the share buttons
+const ShareButtons = ({ url, title }) => {
+  const shareUrls = {
+    twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`,
+    linkedin: `https://www.linkedin.com/shareArticle?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+  };
+
+  return (
+    <div className="flex items-center space-x-4 mt-8 pt-4 border-t border-gray-200 dark:border-gray-700">
+      <span className="text-gray-600 dark:text-gray-400 font-semibold">Share this post:</span>
+      <a
+        href={shareUrls.twitter}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-gray-500 dark:text-gray-400 hover:text-blue-400 transition-colors"
+        aria-label="Share on Twitter"
+      >
+        <Twitter size={24} />
+      </a>
+      <a
+        href={shareUrls.linkedin}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-gray-500 dark:text-gray-400 hover:text-blue-600 transition-colors"
+        aria-label="Share on LinkedIn"
+      >
+        <Linkedin size={24} />
+      </a>
+      <a
+        href={shareUrls.facebook}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-gray-500 dark:text-gray-400 hover:text-blue-500 transition-colors"
+        aria-label="Share on Facebook"
+      >
+        <Facebook size={24} />
+      </a>
+    </div>
+  );
+};
 
 const SinglePostPage = () => {
   const { posts, loading, error, setSelectedTags } = useContext(AppContext);
@@ -12,14 +54,22 @@ const SinglePostPage = () => {
   const navigate = useNavigate();
   const post = posts.find((p) => p.id === postId);
 
+  const [currentUrl, setCurrentUrl] = useState('');
+  const [currentTitle, setCurrentTitle] = useState('');
+
   useEffect(() => {
     if (post && post.slug && slug !== post.slug) {
-      // Redirect to the correct slug URL
       navigate(`/blog/${post.slug}/${post.id}`, { replace: true });
     }
   }, [post, slug, navigate]);
 
-  // This effect controls the visibility of the progress bar
+  useEffect(() => {
+    if (post) {
+      setCurrentUrl(window.location.href);
+      setCurrentTitle(post.title);
+    }
+  }, [post]);
+
   useEffect(() => {
     const styleId = "scroll-progress-style";
     let styleTag = document.getElementById(styleId);
@@ -30,14 +80,12 @@ const SinglePostPage = () => {
       document.head.appendChild(styleTag);
     }
 
-    // When on this page, make the progress circle visible by overriding the default opacity
     styleTag.innerHTML = `
-            .stroke-blue-500 {
-                opacity: 1 !important;
-            }
-        `;
+      .stroke-blue-500 {
+        opacity: 1 !important;
+      }
+    `;
 
-    // When we leave this page, remove the override so it becomes hidden again
     return () => {
       if (styleTag) {
         styleTag.innerHTML = "";
@@ -110,7 +158,6 @@ const SinglePostPage = () => {
                 day: "numeric",
               })}
             </span>
-
             <span>·</span>
             <div className="flex items-center space-x-1">
               <Clock size={14} />
@@ -134,13 +181,14 @@ const SinglePostPage = () => {
             className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed"
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
+          {currentUrl && currentTitle && <ShareButtons url={currentUrl} title={currentTitle} />}
         </article>
-        <hr />
         <div className="mt-10 mb-5">
-          <h4 className="text-2xl font-semibold mb-0 text-gray-900 dark:text-gray-50">
+          <h4 className="text-2xl font-semibold mb-2 text-gray-900 dark:text-gray-50">
             More from the blog
           </h4>
-          <PostCarousel />
+          <hr className="mb-2"/>
+          <PostCarousel excludeId={post.id} />
         </div>
       </div>
     </>
