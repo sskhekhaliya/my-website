@@ -178,7 +178,7 @@ const SinglePostPage = () => {
             </div>
           )}
           <div
-            className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed"
+            className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed mb-0"
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
           {currentUrl && currentTitle && <ShareButtons url={currentUrl} title={currentTitle} />}
